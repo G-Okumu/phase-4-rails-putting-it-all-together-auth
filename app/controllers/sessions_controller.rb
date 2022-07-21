@@ -1,7 +1,5 @@
 class SessionsController < ApplicationController
-    rescue_from ActiveRecord::RecordInvalid, with: :render_unprocessable_entity_response
-
-    before_action :require_login, only: :destroy
+    skip_before_action :require_login, only: :create
 
     def create
         user = User.find_by(username: params[:username])
@@ -18,14 +16,5 @@ class SessionsController < ApplicationController
         head :no_content
     end
 
-    private
-    def require_login
-        user = User.find_by(id: session[:user_id])
-    
-        render json: { errors: ["Not authorized"] }, status: :unauthorized unless user
-    end
-    
-    def render_unprocessable_entity_response(exception)
-        render json: { errors: exception.record.errors.full_messages }, status: :unprocessable_entity
-    end
+
 end
